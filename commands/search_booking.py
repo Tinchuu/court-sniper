@@ -1,2 +1,2 @@
 # Range, string to match
-#Fuzzy if you want
+# Fuzzy if you want
