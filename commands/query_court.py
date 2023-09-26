@@ -1,2 +1,7 @@
-# Range to search for time, start, end and times you want. 
-# Different params will be available
+import datetime
+from repository import respository
+
+def query_court(start: datetime.datetime, end: datetime.datetime):
+    repo = respository.Repository()
+    result = repo.getBookings(start, end)
+    
