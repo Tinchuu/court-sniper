@@ -1,7 +1,11 @@
 import datetime
 from repository import respository
+import asyncio
 
-def query_court(start: datetime.datetime, end: datetime.datetime):
+async def query_court(start: datetime.datetime, end: datetime.datetime):
     repo = respository.Repository()
-    result = repo.getBookings(start, end)
-    
+
+    result = asyncio.create_task(repo.getBookings(start, end))
+
+    return result
+
