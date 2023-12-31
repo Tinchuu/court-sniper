@@ -1,4 +1,3 @@
-import asyncio
 import datetime
 import json
 import os
@@ -31,21 +30,8 @@ async def on_ready():
 
 @bot.tree.command(name="speak")
 async def speak(interaction: discord.Interaction):
-    start = datetime.datetime.now()
-    end = start + datetime.timedelta(days=1)
-
-    start = start.replace(hour=6)
-    end = end.replace(hour=12)
-
-    url = "https://platform.aklbadminton.com/api/booking/feed"
-    s = start.strftime("%Y-%m-%dT%H")
-    e = end.strftime("%Y-%m-%dT%H")
-    params=f"?start={s}&end={e}"
-    response = requests.get(url + params)
-
-    print(url + params)
-
-    await interaction.response.send_message(json.loads(response.content)[0])
+    response = await query_court(interaction)
+    await response
 
 @bot.tree.command(name="query_courts", description="Checks in the weeks what courts are free in the specified time frame.")
 async def query_courts(interaction: discord.Interaction, start_time: int, end_time: int):
@@ -55,7 +41,7 @@ async def query_courts(interaction: discord.Interaction, start_time: int, end_ti
     start = start.replace(hour=start_time)
     end = end.replace(hour=end_time)
 
-    embed = discord.Embed(title="Result", url="https://platform.aklbadminton.com/booking", description="Man this is pain", color=0xff0000)
+    embed = discord.Embed(title="Result", url="https://platform.aklbadminton.com/booking", description="List of courts", color=0xff0000)
 
     for _ in range(7):
         url = "https://platform.aklbadminton.com/api/booking/feed"
@@ -65,15 +51,10 @@ async def query_courts(interaction: discord.Interaction, start_time: int, end_ti
         response = requests.get(url + params)
 
         bookings_list: List[Booking] = []
-        courts_list = []
+        courts_list = [] 
 
         for booking_dict in json.loads(response.content):
             bookings_list.append(Booking.from_dict(booking_dict))
-
-        
-
-        for booking in bookings_list:
-            if booking.start
 
         print(url + params)
 
