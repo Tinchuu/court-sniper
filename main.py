@@ -1,13 +1,15 @@
-import datetime
 import json
 import os
 from dotenv import load_dotenv
 import discord
 from discord.ext import commands
-from commands.query_court import query_court
+from commands.check_session_availability import check_session_availability
 import requests
 from models.booking import Booking
 from typing import List
+from models.Month import Month
+from models.TimeOptions import TimeOptions
+from datetime import datetime, timedelta
 
 load_dotenv()
 
@@ -19,6 +21,7 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix="/", intents=intents)
 
+
 @bot.event
 async def on_ready():
     await bot.tree.sync()
@@ -29,14 +32,20 @@ async def on_ready():
     print(f'{bot.user}\n')
 
 @bot.tree.command(name="speak")
-async def speak(interaction: discord.Interaction):
-    response = await query_court(interaction)
-    await response
+async def speak(interaction: discord.Interaction, start: int, end: int, session: int, month: Month, day: int):
+    today = datetime.now()
+    try:
+        date = datetime(today.year, month.value, day)
+    except ValueError as e:
+        await interaction.response.send_message("damn")
+        return
+    await check_session_availability(interaction, start, end, session, date)
+
 
 @bot.tree.command(name="query_courts", description="Checks in the weeks what courts are free in the specified time frame.")
 async def query_courts(interaction: discord.Interaction, start_time: int, end_time: int):
-    start = datetime.datetime.now()
-    end = start + datetime.timedelta(days=1)
+    start = datetime.now()
+    end = start + timedelta(days=1)
 
     start = start.replace(hour=start_time)
     end = end.replace(hour=end_time)

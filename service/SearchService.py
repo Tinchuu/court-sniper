@@ -1,16 +1,17 @@
-import datetime
+from datetime import datetime
 from repository import SearchRepo
 import asyncio
 
 class SearchService:
-    
 
-    async def query_court(start: datetime.datetime, end: datetime.datetime, court):
+
+    async def query_court(self, start: datetime, end: datetime, court: int):
         repo = SearchRepo.SearchRepo()
-        result = await asyncio.create_task(repo.queryCourt(start, end, 1))
+        print("Inside search service ", start, end)
+        result = asyncio.create_task(repo.queryCourt(start, end, court))
         return result
 
-    async def list_bookings(start: datetime.datetime, end: datetime.datetime):
+    async def list_bookings(self, start: datetime, end: datetime):
         repo = SearchRepo.SearchRepo()
-        result = await asyncio.create_task(repo.getBookings(start, end))
+        result = asyncio.create_task(repo.getBookings(start, end))
         return result
