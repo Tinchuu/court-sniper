@@ -8,3 +8,5 @@ Monitoring of badminton courts, checking for session availability. Receive notif
 
 Comprehensive Booking Search:
 Navigate through both current and historical bookings. Retrieve information on past and present reservations.
+
+Don't ask me why I chose python.
