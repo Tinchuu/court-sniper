@@ -37,7 +37,7 @@ async def speak(interaction: discord.Interaction, start: int, end: int, session:
     try:
         date = datetime(today.year, month.value, day)
     except ValueError as e:
-        await interaction.response.send_message("An invalid date was parsed.")
+        await interaction.response.send_message("An invalid date was parsed.", delete_after=5)
         return
     await check_session_availability(interaction, start, end, session, date)
 
