@@ -21,7 +21,6 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix="/", intents=intents)
 
-
 @bot.event
 async def on_ready():
     await bot.tree.sync()
@@ -31,48 +30,29 @@ async def on_ready():
 
     print(f'{bot.user}\n')
 
-@bot.tree.command(name="speak")
-async def speak(interaction: discord.Interaction, start: int, end: int, session: int, month: Month, day: int):
+async def parse_date(interaction: discord.Interaction, month: Month, day: int) -> datetime:
     today = datetime.now()
     try:
         date = datetime(today.year, month.value, day)
+        return date
     except ValueError as e:
         await interaction.response.send_message("An invalid date was parsed.", delete_after=5)
         return
+
+@bot.tree.command(name="check_session", description="Check whether a session is free")
+async def check_session(interaction: discord.Interaction, start: int, end: int, session: int, month: Month, day: int):
+    date = parse_date(interaction, month, day)
+    format_date = date.strftime("%A %d %b")
+    await interaction.response.send_message(f"Request for session date: {format_date}")
     await check_session_availability(interaction, start, end, session, date)
 
 
-@bot.tree.command(name="query_courts", description="Checks in the weeks what courts are free in the specified time frame.")
-async def query_courts(interaction: discord.Interaction, start_time: int, end_time: int):
-    start = datetime.now()
-    end = start + timedelta(days=1)
-
-    start = start.replace(hour=start_time)
-    end = end.replace(hour=end_time)
-
-    embed = discord.Embed(title="Result", url="https://platform.aklbadminton.com/booking", description="List of courts", color=0xff0000)
-
-    for _ in range(7):
-        url = "https://platform.aklbadminton.com/api/booking/feed"
-        s = start.strftime("%Y-%m-%d")
-        e = end.strftime("%Y-%m-%d")
-        params=f"?start={s}&end={e}"
-        response = requests.get(url + params)
-
-        bookings_list: List[Booking] = []
-        courts_list = [] 
-
-        for booking_dict in json.loads(response.content):
-            bookings_list.append(Booking.from_dict(booking_dict))
-
-        print(url + params)
-
-        embed.add_field(name="undefined", value=json.loads(response.content)[0], inline=False)
-
-        start = end
-        end = end = start + datetime.timedelta(days=1)
-
-    await interaction.response.send_message(embed=embed)
+@bot.tree.command(name="monitor_session", description="Constantly checks for a session in the designated time")
+async def query_courts(interaction: discord.Interaction, start: int, end: int, session: int, month: Month, day: int):
+    date = date = parse_date(interaction, month, day)
+    format_date = date.strftime("%A %d %b")
+    await interaction.response.send_message(f"Request for session date: {format_date}")
+    await check_session_availability(interaction, start, end, session, date)
 
 bot.run(TOKEN)
 
