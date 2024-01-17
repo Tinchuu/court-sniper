@@ -1,15 +1,12 @@
-import json
 import os
+from asyncio import sleep
 from dotenv import load_dotenv
 import discord
 from discord.ext import commands
 from commands.check_session_availability import check_session_availability
-import requests
-from models.booking import Booking
 from typing import List
 from models.Month import Month
-from models.TimeOptions import TimeOptions
-from datetime import datetime, timedelta
+from datetime import datetime
 
 load_dotenv()
 
@@ -41,18 +38,25 @@ async def parse_date(interaction: discord.Interaction, month: Month, day: int) -
 
 @bot.tree.command(name="check_session", description="Check whether a session is free")
 async def check_session(interaction: discord.Interaction, start: int, end: int, session: int, month: Month, day: int):
-    date = parse_date(interaction, month, day)
-    format_date = date.strftime("%A %d %b")
+    date = await parse_date(interaction, month, day)
+    format_date = date.strftime("%A %d %B")
     await interaction.response.send_message(f"Request for session date: {format_date}")
-    await check_session_availability(interaction, start, end, session, date)
+
+    await check_session_availability(bot.get_channel(interaction.channel_id), start, end, session, date)
 
 
 @bot.tree.command(name="monitor_session", description="Constantly checks for a session in the designated time")
-async def query_courts(interaction: discord.Interaction, start: int, end: int, session: int, month: Month, day: int):
-    date = date = parse_date(interaction, month, day)
-    format_date = date.strftime("%A %d %b")
+async def monitor_session(interaction: discord.Interaction, start: int, end: int, session: int, month: Month, day: int):
+    date = await parse_date(interaction, month, day)
+    format_date = date.strftime("%A %d %B")
     await interaction.response.send_message(f"Request for session date: {format_date}")
-    await check_session_availability(interaction, start, end, session, date)
+
+    channel = bot.get_channel(interaction.channel_id)
+
+    while True:
+        await check_session_availability(channel, start, end, session, date)
+        await sleep(60)
+
 
 bot.run(TOKEN)
 
