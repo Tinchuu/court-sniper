@@ -3,7 +3,7 @@ import discord
 from datetime import datetime
 from service.SearchService import SearchService
 
-def convert_time_format(num: int):
+def convert_time_format(num: int) -> str:
     if num > 12:
         return f"{num % 12}:00 pm"
     elif num == 0:
@@ -13,7 +13,8 @@ def convert_time_format(num: int):
     else:
         return f"{num}:00 am"
 
-async def check_session_availability(channel, start: int, end: int, session: int, date: datetime):
+# Should return a bool to indicate if the session is viable
+async def check_session_availability(channel, start: int, end: int, session: int, date: datetime) -> bool:
     search = SearchService()
     display_date = date.strftime("%A %d %b")
     start_time = convert_time_format(start)

@@ -1,11 +1,15 @@
 from datetime import datetime
 import json
+
+from typing import List
+from requests import Response
 from repository.SearchRepo import SearchRepo
 import numpy
 
 class SearchService:
+    search = SearchRepo()
 
-    async def check_time(self, start: int, end: int, date: datetime):
+    async def check_time(self, start: int, end: int, date: datetime) -> List[list]:
         courts = []
 
         for hour in range(start, end):
@@ -21,13 +25,11 @@ class SearchService:
         return courts
 
 
-    async def query_court(self, start: datetime, end: datetime, court: int):
-        search = SearchRepo()
+    async def query_court(self, start: datetime, end: datetime, court: int) -> Response:
         print("Inside search service ", start, end)
-        result = await search.queryCourtAsync(start, end, court)
+        result = await self.search.query_courts_async(start, end, court)
         return result
 
-    async def list_bookings(self, start: datetime, end: datetime):
-        search = SearchRepo()
-        result = await search.getBookingsAsync(start, end)
+    async def list_bookings(self, start: datetime, end: datetime) -> Response:
+        result = await self.search.get_bookings_async(start, end)
         return result
