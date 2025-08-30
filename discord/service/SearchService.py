@@ -6,6 +6,7 @@ from requests import Response
 from repository.SearchRepo import SearchRepo
 import numpy
 
+
 class SearchService:
     search = SearchRepo()
 
@@ -21,9 +22,8 @@ class SearchService:
                 session_info = await self.query_court(start_date, end_date, i)
                 current.append(not json.loads(session_info.content)["meta"]["error"])
             courts.append(numpy.where(numpy.array(current))[0].tolist())
-        
-        return courts
 
+        return courts
 
     async def query_court(self, start: datetime, end: datetime, court: int) -> Response:
         print("Inside search service ", start, end)

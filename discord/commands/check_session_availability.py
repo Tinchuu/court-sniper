@@ -1,4 +1,3 @@
-import json
 import discord
 from datetime import datetime
 from service.SearchService import SearchService
@@ -14,12 +13,12 @@ def convert_time_format(num: int) -> str:
         return f"{num}:00 am"
 
 # Should return a bool to indicate if the session is viable
-async def check_session_availability(channel, start: int, end: int, session: int, date: datetime) -> bool:
+async def check_session_availability(channel: discord.channel.TextChannel, start: int, end: int, session: int, date: datetime) -> bool:
     search = SearchService()
     display_date = date.strftime("%A %d %b")
     start_time = convert_time_format(start)
     end_time = convert_time_format(end)
-    embed = discord.Embed(title=f"{display_date}", url="https://platform.aklbadminton.com/booking", description=f"List of courts between {start_time} and {end_time}", color=0xff0000)
+    embed = discord.Embed(title=f"{display_date}", url="https://platform.aklbadminton.com/booking", description=f"List of free courts between {start_time} and {end_time}", color=0xff0000)
 
     courts = await search.check_time(start, end, date)
 
