@@ -1,7 +1,8 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import routes from './routes';
+import routes from './routes/index';
+import { BookingService } from './services/bookingService';
 
 dotenv.config();
 
@@ -38,6 +39,10 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Health check: http://localhost:${PORT}/health`);
   console.log(`API docs: http://localhost:${PORT}/api`);
+  
+  // Start the booking data pinging system
+  const bookingService = BookingService.getInstance();
+  bookingService.startPinging();
 });
 
 export default app;
